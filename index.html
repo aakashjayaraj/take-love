@@ -106,7 +106,7 @@
 
       // Create 9 hearts
       for (let i = 0; i < 9; i++) {
-        const heart = createHeart();
+        const heart = createSmooth3DHeart();
         heart.position.x = (Math.random() - 0.5) * 4;
         heart.position.y = -5 - Math.random() * 5;
         heart.position.z = (Math.random() - 0.5) * 2;

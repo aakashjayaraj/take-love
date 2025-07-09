@@ -36,33 +36,33 @@
   const uSegments = 40;
   const vSegments = 40;
 
-  // Parametric heart surface
-  // x = 16 sin^3(u)
-  // y = 13 cos(u) - 5 cos(2u) - 2 cos(3u) - cos(4u)
-  // z = sin(v)
   for (let i = 0; i <= uSegments; i++) {
+    // u from 0 to PI for a single lobe
     const u = Math.PI * (i / uSegments);
     for (let j = 0; j <= vSegments; j++) {
       const v = 2 * Math.PI * (j / vSegments);
-
-      // Parametric equations for a 3D heart
-      const x = 0.8 * 16 * Math.pow(Math.sin(u), 3) * Math.sin(v);
-      const y = 0.8 * (13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u));
-      const z = 0.8 * 16 * Math.pow(Math.sin(u), 3) * Math.cos(v);
-
+      // 3D Heart parametric equations
+      const x = 16 * Math.pow(Math.sin(u), 3) * Math.cos(v);
+      const y = 13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u);
+      const z = 16 * Math.pow(Math.sin(u), 3) * Math.sin(v);
+      // Scale down for scene
       vertices.push(x * 0.05, y * 0.05, z * 0.05);
-      normals.push(x, y, z); // Not perfectly accurate, but gives a rounded look
+
+      // Approximate normal as the direction from center to point (good for a heart)
+      const nx = x;
+      const ny = y;
+      const nz = z;
+      const norm = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+      normals.push(nx / norm, ny / norm, nz / norm);
     }
   }
 
-  // Generate indices for triangle strips
   for (let i = 0; i < uSegments; i++) {
     for (let j = 0; j < vSegments; j++) {
       const a = i * (vSegments + 1) + j;
       const b = (i + 1) * (vSegments + 1) + j;
       const c = (i + 1) * (vSegments + 1) + (j + 1);
       const d = i * (vSegments + 1) + (j + 1);
-
       indices.push(a, b, d);
       indices.push(b, c, d);
     }
@@ -73,9 +73,9 @@
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
 
-  const material = new THREE.MeshPhongMaterial({ color: 0xff0000, shininess: 100 });
+  const material = new THREE.MeshPhongMaterial({ color: 0xff0033, shininess: 120, specular: 0xffffff });
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.rotation.x = Math.PI; // To match the original orientation
+  mesh.rotation.x = Math.PI; // Flip for upright orientation
   return mesh;
 }
 

@@ -28,32 +28,56 @@
     let hearts = [];
     let isAnimating = false;
 
-    function createHeart() {
-      const heartShape = new THREE.Shape();
-      heartShape.moveTo(0, 0.5);
-      heartShape.bezierCurveTo(0, 0.5, -0.5, 0.25, -0.5, -0.1);
-      heartShape.bezierCurveTo(-0.5, -0.6, 0, -0.6, 0, -0.3);
-      heartShape.bezierCurveTo(0, -0.6, 0.5, -0.6, 0.5, -0.1);
-      heartShape.bezierCurveTo(0.5, 0.25, 0, 0.5, 0, 0.5);
+  function createSmooth3DHeart() {
+  const geometry = new THREE.BufferGeometry();
+  const vertices = [];
+  const normals = [];
+  const indices = [];
+  const uSegments = 40;
+  const vSegments = 40;
 
-      // Extrude settings with higher resolution for smooth geometry
-      const extrudeSettings = {
-        depth: 0.2,
-        bevelEnabled: true,
-        bevelThickness: 0.05,
-        bevelSize: 0.05,
-        bevelSegments: 8,
-        curveSegments: 32
-      };
+  // Parametric heart surface
+  // x = 16 sin^3(u)
+  // y = 13 cos(u) - 5 cos(2u) - 2 cos(3u) - cos(4u)
+  // z = sin(v)
+  for (let i = 0; i <= uSegments; i++) {
+    const u = Math.PI * (i / uSegments);
+    for (let j = 0; j <= vSegments; j++) {
+      const v = 2 * Math.PI * (j / vSegments);
 
-      const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
-      geometry.computeVertexNormals();
-      const material = new THREE.MeshPhongMaterial({ color: 0xff0000, flatShading: false });
-      const mesh = new THREE.Mesh(geometry, material);
-      // Flip upright
-      mesh.rotation.x = Math.PI;
-      return mesh;
+      // Parametric equations for a 3D heart
+      const x = 0.8 * 16 * Math.pow(Math.sin(u), 3) * Math.sin(v);
+      const y = 0.8 * (13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u));
+      const z = 0.8 * 16 * Math.pow(Math.sin(u), 3) * Math.cos(v);
+
+      vertices.push(x * 0.05, y * 0.05, z * 0.05);
+      normals.push(x, y, z); // Not perfectly accurate, but gives a rounded look
     }
+  }
+
+  // Generate indices for triangle strips
+  for (let i = 0; i < uSegments; i++) {
+    for (let j = 0; j < vSegments; j++) {
+      const a = i * (vSegments + 1) + j;
+      const b = (i + 1) * (vSegments + 1) + j;
+      const c = (i + 1) * (vSegments + 1) + (j + 1);
+      const d = i * (vSegments + 1) + (j + 1);
+
+      indices.push(a, b, d);
+      indices.push(b, c, d);
+    }
+  }
+
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+  geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+
+  const material = new THREE.MeshPhongMaterial({ color: 0xff0000, shininess: 100 });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.rotation.x = Math.PI; // To match the original orientation
+  return mesh;
+}
 
     function initScene() {
       scene = new THREE.Scene();

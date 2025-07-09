@@ -42,9 +42,10 @@
     for (let j = 0; j <= vSegments; j++) {
       const v = 2 * Math.PI * (j / vSegments);
       // 3D Heart parametric equations
-      const x = 16 * Math.pow(Math.sin(u), 3) * Math.cos(v);
-      const y = 13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u);
-      const z = 16 * Math.pow(Math.sin(u), 3) * Math.sin(v);
+      // u: 0..PI, v: 0..2PI
+      const x = 0.5 * 16 * Math.pow(Math.sin(u), 3) * Math.sin(v);
+      const y = 0.5 * (13 * Math.cos(u) - 5 * Math.cos(2 * u) - 2 * Math.cos(3 * u) - Math.cos(4 * u));
+      const z = 0.5 * 16 * Math.pow(Math.sin(u), 3) * Math.cos(v);
       // Scale down for scene
       vertices.push(x * 0.05, y * 0.05, z * 0.05);
 

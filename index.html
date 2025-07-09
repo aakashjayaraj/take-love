@@ -36,16 +36,19 @@
       heartShape.bezierCurveTo(0, -0.6, 0.5, -0.6, 0.5, -0.1);
       heartShape.bezierCurveTo(0.5, 0.25, 0, 0.5, 0, 0.5);
 
+      // Extrude settings with higher resolution for smooth geometry
       const extrudeSettings = {
         depth: 0.2,
         bevelEnabled: true,
         bevelThickness: 0.05,
         bevelSize: 0.05,
-        bevelSegments: 2
+        bevelSegments: 4,
+        curveSegments: 16
       };
 
       const geometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
-      const material = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+      geometry.computeVertexNormals();
+      const material = new THREE.MeshPhongMaterial({ color: 0xff0000, flatShading: false });
       const mesh = new THREE.Mesh(geometry, material);
       // Flip upright
       mesh.rotation.x = Math.PI;

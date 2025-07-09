@@ -20,7 +20,7 @@
   </style>
 </head>
 <body>
-  <button id="take-love">Take Love ❤️</button>
+  <button id="take-love">Take Love</button>
   <script type="module">
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js';
 
@@ -38,11 +38,11 @@
 
       // Extrude settings with higher resolution for smooth geometry
       const extrudeSettings = {
-        depth: 0.2,
+        depth: 0.15,
         bevelEnabled: true,
         bevelThickness: 0.05,
         bevelSize: 0.05,
-        bevelSegments: 8,
+        bevelSegments: 16,
         curveSegments: 32
       };
 
@@ -53,6 +53,7 @@
       // Flip upright
       mesh.rotation.x = Math.PI;
       return mesh;
+    }
 
     function initScene() {
       scene = new THREE.Scene();
